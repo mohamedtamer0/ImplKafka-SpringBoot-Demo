@@ -52,7 +52,7 @@ ImplKafka-SpringBoot-Demo
 
 ```
 STEP 1: DOWNLOAD AND INSTALL KAFKA
-[https://www.apache.org/dyn/closer.cgi?path=/kafka/3.9.0/kafka_2.13-3.9.0.tgz](https://kafka.apache.org/quickstart)
+https://kafka.apache.org/quickstart
 
 STEP 2: START THE KAFKA ENVIRONMENT
 Start the ZooKeeper service
