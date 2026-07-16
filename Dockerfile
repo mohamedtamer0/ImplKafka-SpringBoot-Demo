@@ -5,7 +5,7 @@ COPY pom.xml ./
 COPY src ./src
 RUN mvn --batch-mode --no-transfer-progress clean package -DskipTests
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 
 RUN groupadd --system --gid 1001 spring \
     && useradd --system --uid 1001 --gid spring spring
