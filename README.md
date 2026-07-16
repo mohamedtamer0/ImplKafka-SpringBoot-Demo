@@ -111,10 +111,30 @@ To build and run both Kafka and the application in containers instead:
 docker compose --profile app up --build
 ```
 
-Stop the environment and remove its ephemeral data:
+### Stop the application and Kafka
+
+If both the Spring Boot application and Kafka were started with Docker Compose, stop and remove both project containers and their network with:
 
 ```bash
 docker compose --profile app down
+```
+
+To also remove project volumes and any orphan containers:
+
+```bash
+docker compose --profile app down --volumes --remove-orphans
+```
+
+Verify that no project containers remain:
+
+```bash
+docker compose --profile app ps
+```
+
+If the application was started manually with `./mvnw spring-boot:run` or `java -jar`, stop it with `Ctrl+C` in that terminal, then stop Kafka with:
+
+```bash
+docker compose down
 ```
 
 ## API
