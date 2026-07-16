@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+.env
+target
+*.log
+README.md
+REPOSITORY_REVIEW.md

@@ -1,0 +1,11 @@
+spring:
+  kafka:
+    admin:
+      auto-create: false
+    listener:
+      auto-startup: false
+
+management:
+  health:
+    kafka:
+      enabled: false

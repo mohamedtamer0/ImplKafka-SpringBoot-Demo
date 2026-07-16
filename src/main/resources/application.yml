@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: ImplKafka-SpringBoot-Demo
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    admin:
+      fail-fast: false
+      operation-timeout: 5s
+      properties:
+        default.api.timeout.ms: 5000
+        request.timeout.ms: 3000
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        max.poll.records: 100
+    listener:
+      ack-mode: record
+      missing-topics-fatal: true
+    producer:
+      acks: all
+      retries: 3
+      properties:
+        delivery.timeout.ms: 10000
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        max.block.ms: 5000
+        request.timeout.ms: 5000
+        retry.backoff.ms: 500
+
+server:
+  port: ${SERVER_PORT:8081}
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      show-components: always
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  kafka:
+    topics:
+      text: ${KAFKA_TEXT_TOPIC:kafkalearn}
+      user: ${KAFKA_USER_TOPIC:kafkalearn_json}
+    consumer-group: ${KAFKA_CONSUMER_GROUP:myGroup}
+    concurrency: ${KAFKA_CONSUMER_CONCURRENCY:1}
+    partitions: ${KAFKA_TOPIC_PARTITIONS:3}
+    replication-factor: ${KAFKA_TOPIC_REPLICATION_FACTOR:1}
+    dead-letter-suffix: ${KAFKA_DEAD_LETTER_SUFFIX:.dlt}
+    send-timeout: ${KAFKA_SEND_TIMEOUT:12s}
+    retry:
+      max-attempts: ${KAFKA_RETRY_MAX_ATTEMPTS:3}
+      backoff: ${KAFKA_RETRY_BACKOFF:1s}

@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:8081
+
+### Publish a text message (preferred endpoint)
+POST {{baseUrl}}/api/v1/kafka/messages
+Content-Type: application/json
+
+{
+  "message": "Hello from the HTTP client"
+}
+
+### Publish a user message
+POST {{baseUrl}}/api/v1/kafka/users
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "Mohamed",
+  "lastName": "Tamer"
+}
+
+### Legacy text endpoint (kept for backward compatibility)
+GET {{baseUrl}}/api/v1/kafka/publish?message=Hello%20from%20the%20legacy%20endpoint
+
+### Health
+GET {{baseUrl}}/actuator/health
+
+### Invalid user (returns HTTP 400 Problem Details)
+POST {{baseUrl}}/api/v1/kafka/users
+Content-Type: application/json
+
+{
+  "id": 0,
+  "firstName": "",
+  "lastName": "Tamer"
+}

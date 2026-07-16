@@ -1,40 +1,49 @@
 package com.tamer.ImplKafka_SpringBoot_Demo.kafka;
 
-
+import com.tamer.ImplKafka_SpringBoot_Demo.config.KafkaDemoProperties;
 import com.tamer.ImplKafka_SpringBoot_Demo.model.User;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import org.apache.kafka.common.KafkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JsonKafkaProducer {
 
-    @Value("${spring.kafka.topic-json.name}")
-    private String topicJsonName;
-
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonKafkaProducer.class);
 
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaDemoProperties properties;
 
-    public JsonKafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    public JsonKafkaProducer(KafkaTemplate<String, Object> kafkaTemplate, KafkaDemoProperties properties) {
         this.kafkaTemplate = kafkaTemplate;
+        this.properties = properties;
     }
 
-
-    public void sendMessage(User data){
-        LOGGER.info(String.format("Message sent -> %s",data.toString()));
-
-        Message<User> message = MessageBuilder.withPayload(data)
-                .setHeader(KafkaHeaders.TOPIC,topicJsonName)
-                .build();
-
-        kafkaTemplate.send(message);
+    public void sendMessage(User user) {
+        String topic = properties.topics().user();
+        String messageId = Integer.toString(user.getId());
+        try {
+            SendResult<String, Object> result = kafkaTemplate.send(topic, messageId, user)
+                    .get(properties.sendTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            LOGGER.info(
+                    "Published user message id={} topic={} partition={} offset={}",
+                    messageId,
+                    topic,
+                    result.getRecordMetadata().partition(),
+                    result.getRecordMetadata().offset());
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new MessagePublishException(topic, exception);
+        } catch (ExecutionException | TimeoutException exception) {
+            throw new MessagePublishException(topic, exception);
+        } catch (KafkaException | org.springframework.kafka.KafkaException exception) {
+            throw new MessagePublishException(topic, exception);
+        }
     }
-
 }
